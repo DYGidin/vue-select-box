@@ -49,7 +49,11 @@ export default {
         list: JSON.parse(JSON.stringify(props.options)),
         isFocusing: false,
       }),
-      selectBox = ref();
+      selectBox = ref(),
+      isFocusing = computed(() => {
+        if (selectBox && selectBox.value) return selectBox.value.isFocusing;
+        return false;
+      });
 
     const select = (option) => {
       emit("update:modelValue", option);
@@ -75,11 +79,11 @@ export default {
     );
 
     watch(
-      () => selectBox?.value?.isFocusing,
+      () => isFocusing,
       (current) => {
         state.isFocusing = current;
-        if (slots["selected-items"]) {                
-          state.value = props.selectedItems.map((u) => u.value);             
+        if (slots["selected-items"]) {
+          state.value = props.selectedItems.map((u) => u.value);
         }
       }
     );
@@ -199,5 +203,215 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
+::v-deep() {
+  .apply-item {
+    padding: 5px;
+    position: sticky;
+    bottom: 0px;
+    left: 0;
+    width: 100%;
+    background: white;
+    z-index: 1;
+  }
 
+  .selected-item {
+    position: absolute;
+    top: 3px;
+    left: 5px;
+    right: 5px;
+    background: white;
+    display: grid;
+    grid-auto-flow: column;
+    grid-column-gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    padding-right: 50px;
+  }
+  .selected-items-slot {
+    display: none;
+    &-show {
+      display: block;
+    }
+  }
+  .dropdown-icon-slot {
+    position: absolute;
+    top: 0;
+    left: -1px;
+    right: 5px;
+    height: 100%;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid white;
+    background: white;
+  }
+  * {
+    box-sizing: border-box;
+    outline: none;
+  }
+  .image-item {
+    display: flex;
+    align-items: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 21px;
+    color: #363636;
+
+    img {
+      width: 25px;
+      height: 25px;
+      margin-right: 10px;
+      border-radius: 50%;
+    }
+  }
+
+  .vue-select {
+    position: relative;
+    .vue-select-header {
+      height: 55px;
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 21px;
+      border: 1px solid #c3cad9;
+      box-sizing: border-box;
+      border-radius: 8px;
+      text-align: center;
+      color: #363636;
+      cursor: pointer;
+      @media (max-width: 1200px) {
+        height: 45px;
+      }
+    }
+    .icon {
+      border-left: 1px solid #c3cad9;
+      width: 54px;
+      height: 100%;
+      display: block;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      &:before {
+        content: "";
+        display: block;
+        width: 10px;
+        height: 10px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: url("@/assets/images/dropdown_arrow.png");
+        background-repeat: no-repeat;
+        background-position: 50% 50%;
+        transition: 0.5s;
+      }
+      &.active {
+        &:before {
+          transform: translate(-50%, -50%) rotate(-180deg);
+        }
+      }
+    }
+    .vue-input {
+      width: 100%;
+      input {
+        color: #363636;
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 21px;
+        height: 100%;
+        outline: 0;
+        border: 0;
+        padding-left: 25px;
+        width: 100%;
+        &::placeholder {
+          color: #363636;
+        }
+      }
+    }
+  }
+
+  .vue-dropdown {
+    width: 100%;
+    position: absolute;
+    z-index: 999;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    background: white;
+    box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    margin-top: 17px;
+    max-height: 300px;
+    overflow: auto;
+    .vue-dropdown-item {
+      cursor: pointer;
+      height: 55px;
+      display: flex;
+      align-items: center;
+      padding-left: 25px;
+      padding-right: 25px;
+      &.selected,
+      &:hover {
+        background: #f9fcff;
+      }
+    }
+    &[data-multiple="true"] {
+      .vue-dropdown-item {
+        position: relative;
+        padding-left: 40px;
+        &::after {
+          content: "";
+          display: block;
+          width: 16px;
+          height: 16px;
+          border: 2px solid #363636;
+          box-sizing: border-box;
+          border-radius: 4px;
+          position: absolute;
+          left: 17px;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+        &.selected {
+          &::before {
+            content: "";
+            position: absolute;
+            z-index: 1;
+            left: 22px;
+            top: 50%;
+            margin-top: -2px;
+            transform: translateY(-50%) rotate(45deg);
+            height: 9px;
+            width: 4px;
+            border-bottom: 2px solid white;
+            border-right: 2px solid white;
+          }
+          &::after {
+            border: 0;
+            background: #0f8af9;
+          }
+        }
+      }
+    }
+  }
+}
+.image-item ::v-deep(.vue-select .vue-input input) {
+  padding-left: 60px;
+}
+.small-font {
+  ::v-deep(.image-item) {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 18px;
+  }
+}
 </style>
+

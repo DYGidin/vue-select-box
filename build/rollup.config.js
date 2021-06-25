@@ -10,7 +10,8 @@ import babel from '@rollup/plugin-babel';
 import PostCSS from 'rollup-plugin-postcss';
 import { terser } from 'rollup-plugin-terser';
 import minimist from 'minimist';
-import scss from 'rollup-plugin-scss';  
+import scss from 'rollup-plugin-scss'; 
+import sass from 'rollup-plugin-sass'; 
 // Get browserslist config and remove ie from es build targets
 const esbrowserslist = fs.readFileSync('./.browserslistrc')
   .toString()
@@ -28,7 +29,8 @@ const projectRoot = path.resolve(__dirname, '..');
 const baseConfig = {
   input: 'src/entry.js',
   plugins: {
-    scss:{},
+    scss,
+    sass,
     preVue: [
       alias({
         entries: [
@@ -43,6 +45,7 @@ const baseConfig = {
       'process.env.NODE_ENV': JSON.stringify('production'),
     },
     vue: {
+      preprocessStyles: true,
     },
     postVue: [
       resolve({
@@ -59,11 +62,11 @@ const baseConfig = {
       PostCSS({ include: /(?<!&module=.*)\.css$/ }),
       commonjs(),
     ],
-    // babel: {
-    //   exclude: 'node_modules/**',
-    //   extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
-    //   babelHelpers: 'bundled',
-    // },
+    babel: {
+      exclude: 'node_modules/**',
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.vue'],
+      babelHelpers: 'bundled',
+    },
    
   },
 };
