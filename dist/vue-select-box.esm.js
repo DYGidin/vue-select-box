@@ -1,4 +1,4 @@
-import { openBlock, createBlock, renderSlot, createVNode, withKeys, withModifiers, mergeProps, Fragment, renderList, createCommentVNode, toDisplayString, toRef, computed, isRef, isReactive, ref, getCurrentInstance, watch, nextTick, onMounted, watchEffect, provide, resolveComponent, withCtx, withDirectives, vShow, onUpdated, inject, withScopeId } from 'vue';
+import { openBlock, createBlock, renderSlot, createVNode, withKeys, withModifiers, mergeProps, Fragment, renderList, createCommentVNode, toDisplayString, toRef, computed, isRef, isReactive, ref, getCurrentInstance, watch, nextTick, onMounted, watchEffect, provide, resolveComponent, withCtx, withDirectives, vShow, onUpdated, inject, reactive, toRefs, defineComponent, h, createApp, withScopeId } from 'vue';
 
 function k(e) {
   return (k = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (e) {
@@ -986,14 +986,161 @@ var script = {
     },
   },
   setup(props, { emit, slots }) {
-   
-    return {
+    const state = reactive({
+        value: props.modelValue,
+        list: JSON.parse(JSON.stringify(props.options)),
+        isFocusing: false,
+      }),
+      selectBox = ref();
 
+    const select = (option) => {
+      emit("update:modelValue", option);
+      emit("change", option);
+      if (Array.isArray(option) && !slots["selected-items"]) {
+        const inputEl = selectBox.value.wrapper.querySelector(".vue-input input");
+        nextTick(() => (inputEl.placeholder = props.selectedText + " " + option.length));
+      }
+    };
+
+    watch(
+      () => props.modelValue,
+      (current) => {
+        state.value = current;
+      }
+    );
+
+    watch(
+      () => props.options,
+      (current) => {
+        state.list = current;
+      }
+    );
+
+    watch(
+      () => selectBox?.value?.isFocusing,
+      (current) => {
+        state.isFocusing = current;
+        if (slots["selected-items"]) {                
+          state.value = props.selectedItems.map((u) => u.value);             
+        }
+      }
+    );
+
+    watch(
+      () => props.selectedItems,
+      (current) => {
+        const inputEl = selectBox.value.wrapper.querySelector(".vue-input input");
+        inputEl.placeholder = props.placeholder;
+      }
+    );
+
+    const injectApplyButton = () => {
+      const buttonApply = defineComponent({
+          render() {
+            return h(
+              "div",
+              { onClick: () => selectBox.value.blur() },
+              slots["apply-button"]()
+            );
+          },
+        }),
+        list = selectBox.value.wrapper.querySelector(".vue-dropdown"),
+        li = document.createElement("li");
+      li.classList.add("apply-item");
+      list.appendChild(li);
+      const app = createApp(buttonApply);
+      app.mount(li);
+    };
+
+    const injectSelectedItems = () => {
+      const header = selectBox.value.wrapper.querySelector(".vue-input");
+
+      const itemComponent = defineComponent({
+        render() {
+          return h(
+            "div",
+            {
+              class: computed(() =>
+                !state.isFocusing
+                  ? "selected-items-slot selected-items-slot-show"
+                  : "selected-items-slot"
+              ).value,
+            },
+            slots["selected-items"]()
+          );
+        },
+      });
+
+      const container = document.createElement("div");
+      header.appendChild(container);
+      const app = createApp(itemComponent);
+      app.mount(container);
+    };
+
+    const injectSelectedItem = () => {
+      const header = selectBox.value.wrapper.querySelector(".vue-input");
+
+      const itemComponent = defineComponent({
+        render() {
+          return h(
+            "div",
+            {
+              class: computed(() =>
+                !state.isFocusing ? "selected-item selected-item-show" : "selected-item"
+              ).value,
+            },
+            slots["selected-item"]()
+          );
+        },
+      });
+
+      const container = document.createElement("div");
+      header.appendChild(container);
+      const app = createApp(itemComponent);
+      app.mount(container);
+    };
+
+    const injectIcon = () => {
+      const icon = defineComponent({
+          render() {
+            return h(
+              "div",
+              { class: "dropdown-icon-slot" },
+              h("div", { class: "icon-wrapper" }, slots["icon"]())
+            );
+          },
+        }),
+        container = selectBox.value.wrapper.querySelector(
+          ".vue-select-header .arrow-downward"
+        );
+      const app = createApp(icon);
+      app.mount(container);
+    };
+
+    onMounted(() => {
+      if (slots["selected-items"]) {
+        injectSelectedItems();
+      }
+      if (slots["apply-button"]) {
+        injectApplyButton();
+      }
+      if (slots["selected-item"]) {
+        injectSelectedItem();
+      }
+      if (slots["icon"]) {
+        injectIcon();
+      }
+    });
+
+    return {
+      ...toRefs(state),
+      select,
+      selectBox,
     };
   },
 };
 
-const _withId = /*#__PURE__*/withScopeId("data-v-5bfad3a6");
+const _withId = /*#__PURE__*/withScopeId("data-v-0bbc2dd2");
 
 const render = /*#__PURE__*/_withId((_ctx, _cache, $props, $setup, $data, $options) => {
   const _component_vue_select = resolveComponent("vue-select");
@@ -1005,15 +1152,21 @@ const render = /*#__PURE__*/_withId((_ctx, _cache, $props, $setup, $data, $optio
       modelValue: _ctx.value,
       "onUpdate:modelValue": [
         _cache[1] || (_cache[1] = $event => (_ctx.value = $event)),
-        _cache[2] || (_cache[2] = (value) => _ctx.select(value))
+        _cache[2] || (_cache[2] = (value) => $setup.select(value))
       ],
-      options: _ctx.list
-    }), null, 16, ["modelValue", "options"])
+      options: _ctx.list,
+      ref: "selectBox"
+    }), {
+      "dropdown-item": _withId(({ option }) => [
+        renderSlot(_ctx.$slots, "default", { option: option })
+      ]),
+      _: 1
+    }, 16, ["modelValue", "options"])
   ], 2))
 });
 
 script.render = render;
-script.__scopeId = "data-v-5bfad3a6";
+script.__scopeId = "data-v-0bbc2dd2";
 
 // Import vue component
 // IIFE injects install function into component, allowing component

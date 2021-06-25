@@ -1066,12 +1066,159 @@ P.render = function (e, n, l, d, s, h) {
     },
   },
   setup(props, { emit, slots }) {
-   
-    return {
+    const state = vue.reactive({
+        value: props.modelValue,
+        list: JSON.parse(JSON.stringify(props.options)),
+        isFocusing: false,
+      }),
+      selectBox = vue.ref();
 
+    const select = (option) => {
+      emit("update:modelValue", option);
+      emit("change", option);
+      if (Array.isArray(option) && !slots["selected-items"]) {
+        const inputEl = selectBox.value.wrapper.querySelector(".vue-input input");
+        vue.nextTick(() => (inputEl.placeholder = props.selectedText + " " + option.length));
+      }
+    };
+
+    vue.watch(
+      () => props.modelValue,
+      (current) => {
+        state.value = current;
+      }
+    );
+
+    vue.watch(
+      () => props.options,
+      (current) => {
+        state.list = current;
+      }
+    );
+
+    vue.watch(
+      () => selectBox?.value?.isFocusing,
+      (current) => {
+        state.isFocusing = current;
+        if (slots["selected-items"]) {                
+          state.value = props.selectedItems.map((u) => u.value);             
+        }
+      }
+    );
+
+    vue.watch(
+      () => props.selectedItems,
+      (current) => {
+        const inputEl = selectBox.value.wrapper.querySelector(".vue-input input");
+        inputEl.placeholder = props.placeholder;
+      }
+    );
+
+    const injectApplyButton = () => {
+      const buttonApply = vue.defineComponent({
+          render() {
+            return vue.h(
+              "div",
+              { onClick: () => selectBox.value.blur() },
+              slots["apply-button"]()
+            );
+          },
+        }),
+        list = selectBox.value.wrapper.querySelector(".vue-dropdown"),
+        li = document.createElement("li");
+      li.classList.add("apply-item");
+      list.appendChild(li);
+      const app = vue.createApp(buttonApply);
+      app.mount(li);
+    };
+
+    const injectSelectedItems = () => {
+      const header = selectBox.value.wrapper.querySelector(".vue-input");
+
+      const itemComponent = vue.defineComponent({
+        render() {
+          return vue.h(
+            "div",
+            {
+              class: vue.computed(() =>
+                !state.isFocusing
+                  ? "selected-items-slot selected-items-slot-show"
+                  : "selected-items-slot"
+              ).value,
+            },
+            slots["selected-items"]()
+          );
+        },
+      });
+
+      const container = document.createElement("div");
+      header.appendChild(container);
+      const app = vue.createApp(itemComponent);
+      app.mount(container);
+    };
+
+    const injectSelectedItem = () => {
+      const header = selectBox.value.wrapper.querySelector(".vue-input");
+
+      const itemComponent = vue.defineComponent({
+        render() {
+          return vue.h(
+            "div",
+            {
+              class: vue.computed(() =>
+                !state.isFocusing ? "selected-item selected-item-show" : "selected-item"
+              ).value,
+            },
+            slots["selected-item"]()
+          );
+        },
+      });
+
+      const container = document.createElement("div");
+      header.appendChild(container);
+      const app = vue.createApp(itemComponent);
+      app.mount(container);
+    };
+
+    const injectIcon = () => {
+      const icon = vue.defineComponent({
+          render() {
+            return vue.h(
+              "div",
+              { class: "dropdown-icon-slot" },
+              vue.h("div", { class: "icon-wrapper" }, slots["icon"]())
+            );
+          },
+        }),
+        container = selectBox.value.wrapper.querySelector(
+          ".vue-select-header .arrow-downward"
+        );
+      const app = vue.createApp(icon);
+      app.mount(container);
+    };
+
+    vue.onMounted(() => {
+      if (slots["selected-items"]) {
+        injectSelectedItems();
+      }
+      if (slots["apply-button"]) {
+        injectApplyButton();
+      }
+      if (slots["selected-item"]) {
+        injectSelectedItem();
+      }
+      if (slots["icon"]) {
+        injectIcon();
+      }
+    });
+
+    return {
+      ...vue.toRefs(state),
+      select,
+      selectBox,
     };
   },
-};const _withId = /*#__PURE__*/vue.withScopeId("data-v-5bfad3a6");
+};const _withId = /*#__PURE__*/vue.withScopeId("data-v-0bbc2dd2");
 
 const render = /*#__PURE__*/_withId((_ctx, _cache, $props, $setup, $data, $options) => {
   const _component_vue_select = vue.resolveComponent("vue-select");
@@ -1083,13 +1230,19 @@ const render = /*#__PURE__*/_withId((_ctx, _cache, $props, $setup, $data, $optio
       modelValue: _ctx.value,
       "onUpdate:modelValue": [
         _cache[1] || (_cache[1] = $event => (_ctx.value = $event)),
-        _cache[2] || (_cache[2] = (value) => _ctx.select(value))
+        _cache[2] || (_cache[2] = (value) => $setup.select(value))
       ],
-      options: _ctx.list
-    }), null, 16, ["modelValue", "options"])
+      options: _ctx.list,
+      ref: "selectBox"
+    }), {
+      "dropdown-item": _withId(({ option }) => [
+        vue.renderSlot(_ctx.$slots, "default", { option: option })
+      ]),
+      _: 1
+    }, 16, ["modelValue", "options"])
   ], 2))
 });script.render = render;
-script.__scopeId = "data-v-5bfad3a6";// Import vue component
+script.__scopeId = "data-v-0bbc2dd2";// Import vue component
 // IIFE injects install function into component, allowing component
 // to be registered via Vue.use() as well as Vue.component(),
 
