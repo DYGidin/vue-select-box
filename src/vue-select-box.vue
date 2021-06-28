@@ -49,11 +49,7 @@ export default {
         list: JSON.parse(JSON.stringify(props.options)),
         isFocusing: false,
       }),
-      selectBox = ref(),
-      isFocusing = computed(() => {
-        if (selectBox && selectBox.value) return selectBox.value.isFocusing;
-        return false;
-      });
+      selectBox = ref();
 
     const select = (option) => {
       emit("update:modelValue", option);
@@ -78,15 +74,17 @@ export default {
       }
     );
 
-    watch(
-      () => isFocusing,
-      (current) => {
-        state.isFocusing = current;
-        if (slots["selected-items"]) {
-          state.value = props.selectedItems.map((u) => u.value);
+    nextTick(() => {
+      watch(
+        () => selectBox.value.isFocusing,
+        (current) => {
+          state.isFocusing = current;
+          if (slots["selected-items"]) {
+            state.value = props.selectedItems.map((u) => u.value);
+          }
         }
-      }
-    );
+      );
+    });
 
     watch(
       () => props.selectedItems,
@@ -307,7 +305,7 @@ export default {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: url("@/assets/images/dropdown_arrow.png");
+        background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAICAYAAADJEc7MAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAACCSURBVHgBjdA7DoAgDAZgHgmzM5NH6MJBPClHMM4McgQn4ujOgPyJJsYUQpeW0i80CFGDiCYxGHV2RlYojDG7c44GENXZFQ+pGONRSlmklL6HH+QxW82l0UwpndbaDRgZ5xYKIUT09HvZwhxCyP9KWBcYgzlnwSEWfjFqDnUDuPdZN5KiUuIFuIyJAAAAAElFTkSuQmCC);
         background-repeat: no-repeat;
         background-position: 50% 50%;
         transition: 0.5s;
@@ -341,7 +339,7 @@ export default {
   .vue-dropdown {
     width: 100%;
     position: absolute;
-    z-index: 999;
+    z-index: 999999;
     list-style: none;
     padding: 0;
     margin: 0;
@@ -414,4 +412,3 @@ export default {
   }
 }
 </style>
-

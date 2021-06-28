@@ -138,11 +138,7 @@ function _nonIterableRest() {
       list: JSON.parse(JSON.stringify(props.options)),
       isFocusing: false
     }),
-        selectBox = vue.ref(),
-        isFocusing = vue.computed(function () {
-      if (selectBox && selectBox.value) return selectBox.value.isFocusing;
-      return false;
-    });
+        selectBox = vue.ref();
 
     var select = function select(option) {
       emit("update:modelValue", option);
@@ -166,16 +162,18 @@ function _nonIterableRest() {
     }, function (current) {
       state.list = current;
     });
-    vue.watch(function () {
-      return isFocusing;
-    }, function (current) {
-      state.isFocusing = current;
+    vue.nextTick(function () {
+      vue.watch(function () {
+        return selectBox.value.isFocusing;
+      }, function (current) {
+        state.isFocusing = current;
 
-      if (slots["selected-items"]) {
-        state.value = props.selectedItems.map(function (u) {
-          return u.value;
-        });
-      }
+        if (slots["selected-items"]) {
+          state.value = props.selectedItems.map(function (u) {
+            return u.value;
+          });
+        }
+      });
     });
     vue.watch(function () {
       return props.selectedItems;
@@ -273,7 +271,7 @@ function _nonIterableRest() {
       selectBox: selectBox
     });
   }
-};var _withId = /*#__PURE__*/vue.withScopeId("data-v-0256f478");
+};var _withId = /*#__PURE__*/vue.withScopeId("data-v-a6559e8c");
 
 var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data, $options) {
   var _component_vue_select = vue.resolveComponent("vue-select");
@@ -326,9 +324,9 @@ var render = /*#__PURE__*/_withId(function (_ctx, _cache, $props, $setup, $data,
   } else {
     style.appendChild(document.createTextNode(css));
   }
-}var css_248z = "[data-v-0256f478]  .apply-item {\n  padding: 5px;\n  position: sticky;\n  bottom: 0px;\n  left: 0;\n  width: 100%;\n  background: white;\n  z-index: 1;\n}\n[data-v-0256f478]  .selected-item {\n  position: absolute;\n  top: 3px;\n  left: 5px;\n  right: 5px;\n  background: white;\n  display: grid;\n  grid-auto-flow: column;\n  grid-column-gap: 10px;\n  justify-content: flex-start;\n  align-items: center;\n  padding-right: 50px;\n}\n[data-v-0256f478]  .selected-items-slot {\n  display: none;\n}\n[data-v-0256f478]  .selected-items-slot-show {\n  display: block;\n}\n[data-v-0256f478]  .dropdown-icon-slot {\n  position: absolute;\n  top: 0;\n  left: -1px;\n  right: 5px;\n  height: 100%;\n  z-index: 999;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-left: 1px solid white;\n  background: white;\n}\n[data-v-0256f478]  * {\n  box-sizing: border-box;\n  outline: none;\n}\n[data-v-0256f478]  .image-item {\n  display: flex;\n  align-items: center;\n  font-style: normal;\n  font-weight: 500;\n  font-size: 14px;\n  line-height: 21px;\n  color: #363636;\n}\n[data-v-0256f478]  .image-item img {\n  width: 25px;\n  height: 25px;\n  margin-right: 10px;\n  border-radius: 50%;\n}\n[data-v-0256f478]  .vue-select {\n  position: relative;\n}\n[data-v-0256f478]  .vue-select .vue-select-header {\n  height: 55px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  font-style: normal;\n  font-weight: 500;\n  font-size: 14px;\n  line-height: 21px;\n  border: 1px solid #c3cad9;\n  box-sizing: border-box;\n  border-radius: 8px;\n  text-align: center;\n  color: #363636;\n  cursor: pointer;\n}\n@media (max-width: 1200px) {\n[data-v-0256f478]  .vue-select .vue-select-header {\n    height: 45px;\n}\n}\n[data-v-0256f478]  .vue-select .icon {\n  border-left: 1px solid #c3cad9;\n  width: 54px;\n  height: 100%;\n  display: block;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  flex-shrink: 0;\n}\n[data-v-0256f478]  .vue-select .icon:before {\n  content: \"\";\n  display: block;\n  width: 10px;\n  height: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: url(\"@/assets/images/dropdown_arrow.png\");\n  background-repeat: no-repeat;\n  background-position: 50% 50%;\n  transition: 0.5s;\n}\n[data-v-0256f478]  .vue-select .icon.active:before {\n  transform: translate(-50%, -50%) rotate(-180deg);\n}\n[data-v-0256f478]  .vue-select .vue-input {\n  width: 100%;\n}\n[data-v-0256f478]  .vue-select .vue-input input {\n  color: #363636;\n  font-style: normal;\n  font-weight: 500;\n  font-size: 14px;\n  line-height: 21px;\n  height: 100%;\n  outline: 0;\n  border: 0;\n  padding-left: 25px;\n  width: 100%;\n}\n[data-v-0256f478]  .vue-select .vue-input input::placeholder {\n  color: #363636;\n}\n[data-v-0256f478]  .vue-dropdown {\n  width: 100%;\n  position: absolute;\n  z-index: 999;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  background: white;\n  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.15);\n  border-radius: 8px;\n  margin-top: 17px;\n  max-height: 300px;\n  overflow: auto;\n}\n[data-v-0256f478]  .vue-dropdown .vue-dropdown-item {\n  cursor: pointer;\n  height: 55px;\n  display: flex;\n  align-items: center;\n  padding-left: 25px;\n  padding-right: 25px;\n}\n[data-v-0256f478]  .vue-dropdown .vue-dropdown-item.selected,[data-v-0256f478]  .vue-dropdown .vue-dropdown-item:hover {\n  background: #f9fcff;\n}\n[data-v-0256f478]  .vue-dropdown[data-multiple=true] .vue-dropdown-item {\n  position: relative;\n  padding-left: 40px;\n}\n[data-v-0256f478]  .vue-dropdown[data-multiple=true] .vue-dropdown-item::after {\n  content: \"\";\n  display: block;\n  width: 16px;\n  height: 16px;\n  border: 2px solid #363636;\n  box-sizing: border-box;\n  border-radius: 4px;\n  position: absolute;\n  left: 17px;\n  top: 50%;\n  transform: translateY(-50%);\n}\n[data-v-0256f478]  .vue-dropdown[data-multiple=true] .vue-dropdown-item.selected::before {\n  content: \"\";\n  position: absolute;\n  z-index: 1;\n  left: 22px;\n  top: 50%;\n  margin-top: -2px;\n  transform: translateY(-50%) rotate(45deg);\n  height: 9px;\n  width: 4px;\n  border-bottom: 2px solid white;\n  border-right: 2px solid white;\n}\n[data-v-0256f478]  .vue-dropdown[data-multiple=true] .vue-dropdown-item.selected::after {\n  border: 0;\n  background: #0f8af9;\n}\n.image-item[data-v-0256f478] .vue-select .vue-input input {\n  padding-left: 60px;\n}\n.small-font[data-v-0256f478] .image-item {\n  font-weight: 500;\n  font-size: 12px;\n  line-height: 18px;\n}";
+}var css_248z = "[data-v-a6559e8c]  .apply-item {\n  padding: 5px;\n  position: sticky;\n  bottom: 0px;\n  left: 0;\n  width: 100%;\n  background: white;\n  z-index: 1;\n}\n[data-v-a6559e8c]  .selected-item {\n  position: absolute;\n  top: 3px;\n  left: 5px;\n  right: 5px;\n  background: white;\n  display: grid;\n  grid-auto-flow: column;\n  grid-column-gap: 10px;\n  justify-content: flex-start;\n  align-items: center;\n  padding-right: 50px;\n}\n[data-v-a6559e8c]  .selected-items-slot {\n  display: none;\n}\n[data-v-a6559e8c]  .selected-items-slot-show {\n  display: block;\n}\n[data-v-a6559e8c]  .dropdown-icon-slot {\n  position: absolute;\n  top: 0;\n  left: -1px;\n  right: 5px;\n  height: 100%;\n  z-index: 999;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-left: 1px solid white;\n  background: white;\n}\n[data-v-a6559e8c]  * {\n  box-sizing: border-box;\n  outline: none;\n}\n[data-v-a6559e8c]  .image-item {\n  display: flex;\n  align-items: center;\n  font-style: normal;\n  font-weight: 500;\n  font-size: 14px;\n  line-height: 21px;\n  color: #363636;\n}\n[data-v-a6559e8c]  .image-item img {\n  width: 25px;\n  height: 25px;\n  margin-right: 10px;\n  border-radius: 50%;\n}\n[data-v-a6559e8c]  .vue-select {\n  position: relative;\n}\n[data-v-a6559e8c]  .vue-select .vue-select-header {\n  height: 55px;\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  font-style: normal;\n  font-weight: 500;\n  font-size: 14px;\n  line-height: 21px;\n  border: 1px solid #c3cad9;\n  box-sizing: border-box;\n  border-radius: 8px;\n  text-align: center;\n  color: #363636;\n  cursor: pointer;\n}\n@media (max-width: 1200px) {\n[data-v-a6559e8c]  .vue-select .vue-select-header {\n    height: 45px;\n}\n}\n[data-v-a6559e8c]  .vue-select .icon {\n  border-left: 1px solid #c3cad9;\n  width: 54px;\n  height: 100%;\n  display: block;\n  align-items: center;\n  justify-content: center;\n  position: relative;\n  flex-shrink: 0;\n}\n[data-v-a6559e8c]  .vue-select .icon:before {\n  content: \"\";\n  display: block;\n  width: 10px;\n  height: 10px;\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAICAYAAADJEc7MAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAACCSURBVHgBjdA7DoAgDAZgHgmzM5NH6MJBPClHMM4McgQn4ujOgPyJJsYUQpeW0i80CFGDiCYxGHV2RlYojDG7c44GENXZFQ+pGONRSlmklL6HH+QxW82l0UwpndbaDRgZ5xYKIUT09HvZwhxCyP9KWBcYgzlnwSEWfjFqDnUDuPdZN5KiUuIFuIyJAAAAAElFTkSuQmCC);\n  background-repeat: no-repeat;\n  background-position: 50% 50%;\n  transition: 0.5s;\n}\n[data-v-a6559e8c]  .vue-select .icon.active:before {\n  transform: translate(-50%, -50%) rotate(-180deg);\n}\n[data-v-a6559e8c]  .vue-select .vue-input {\n  width: 100%;\n}\n[data-v-a6559e8c]  .vue-select .vue-input input {\n  color: #363636;\n  font-style: normal;\n  font-weight: 500;\n  font-size: 14px;\n  line-height: 21px;\n  height: 100%;\n  outline: 0;\n  border: 0;\n  padding-left: 25px;\n  width: 100%;\n}\n[data-v-a6559e8c]  .vue-select .vue-input input::placeholder {\n  color: #363636;\n}\n[data-v-a6559e8c]  .vue-dropdown {\n  width: 100%;\n  position: absolute;\n  z-index: 999999;\n  list-style: none;\n  padding: 0;\n  margin: 0;\n  background: white;\n  box-shadow: 0px 5px 25px rgba(0, 0, 0, 0.15);\n  border-radius: 8px;\n  margin-top: 17px;\n  max-height: 300px;\n  overflow: auto;\n}\n[data-v-a6559e8c]  .vue-dropdown .vue-dropdown-item {\n  cursor: pointer;\n  height: 55px;\n  display: flex;\n  align-items: center;\n  padding-left: 25px;\n  padding-right: 25px;\n}\n[data-v-a6559e8c]  .vue-dropdown .vue-dropdown-item.selected,[data-v-a6559e8c]  .vue-dropdown .vue-dropdown-item:hover {\n  background: #f9fcff;\n}\n[data-v-a6559e8c]  .vue-dropdown[data-multiple=true] .vue-dropdown-item {\n  position: relative;\n  padding-left: 40px;\n}\n[data-v-a6559e8c]  .vue-dropdown[data-multiple=true] .vue-dropdown-item::after {\n  content: \"\";\n  display: block;\n  width: 16px;\n  height: 16px;\n  border: 2px solid #363636;\n  box-sizing: border-box;\n  border-radius: 4px;\n  position: absolute;\n  left: 17px;\n  top: 50%;\n  transform: translateY(-50%);\n}\n[data-v-a6559e8c]  .vue-dropdown[data-multiple=true] .vue-dropdown-item.selected::before {\n  content: \"\";\n  position: absolute;\n  z-index: 1;\n  left: 22px;\n  top: 50%;\n  margin-top: -2px;\n  transform: translateY(-50%) rotate(45deg);\n  height: 9px;\n  width: 4px;\n  border-bottom: 2px solid white;\n  border-right: 2px solid white;\n}\n[data-v-a6559e8c]  .vue-dropdown[data-multiple=true] .vue-dropdown-item.selected::after {\n  border: 0;\n  background: #0f8af9;\n}\n.image-item[data-v-a6559e8c] .vue-select .vue-input input {\n  padding-left: 60px;\n}\n.small-font[data-v-a6559e8c] .image-item {\n  font-weight: 500;\n  font-size: 12px;\n  line-height: 18px;\n}";
 styleInject(css_248z);script.render = render;
-script.__scopeId = "data-v-0256f478";// Import vue component
+script.__scopeId = "data-v-a6559e8c";// Import vue component
 // IIFE injects install function into component, allowing component
 // to be registered via Vue.use() as well as Vue.component(),
 
